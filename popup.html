@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Quick Timer</title>
+  <link rel="stylesheet" href="popup.css">
+</head>
+<body>
+  <div class="container">
+    <h1>⏱ Quick Timer</h1>
+
+    <div id="timer-display" class="timer-display">
+      <span id="hours">00</span>:<span id="minutes">00</span>:<span id="seconds">00</span>
+    </div>
+
+    <div id="status" class="status">Siap</div>
+
+    <div id="controls" class="controls">
+      <button id="btn-start" class="btn btn-primary">Mulai</button>
+      <button id="btn-pause" class="btn btn-warning" style="display:none;">Jeda</button>
+      <button id="btn-reset" class="btn btn-danger">Reset</button>
+    </div>
+
+    <div class="section-label">Preset Cepat</div>
+    <div id="presets" class="preset-grid">
+      <button class="btn btn-preset" data-minutes="60">1 Jam</button>
+      <button class="btn btn-preset" data-minutes="90">1.5 Jam</button>
+      <button class="btn btn-preset" data-minutes="120">2 Jam</button>
+      <button class="btn btn-preset" data-minutes="30">30 Mnt</button>
+    </div>
+
+    <div class="section-label">Tambah Waktu</div>
+    <div id="add-time" class="add-grid">
+      <button class="btn btn-add" data-seconds="60">+1 Mnt</button>
+      <button class="btn btn-add" data-seconds="300">+5 Mnt</button>
+      <button class="btn btn-add" data-seconds="900">+15 Mnt</button>
+      <button class="btn btn-add btn-add-big" data-seconds="1800">+30 Mnt</button>
+    </div>
+
+    <div class="section-label">Input Manual</div>
+    <div class="manual-input">
+      <input type="number" id="input-hours" min="0" max="23" value="0" placeholder="jam">
+      <input type="number" id="input-minutes" min="0" max="59" value="0" placeholder="mnt">
+      <input type="number" id="input-seconds" min="0" max="59" value="0" placeholder="dtk">
+      <button id="btn-set" class="btn btn-set">Set</button>
+    </div>
+  </div>
+
+  <script src="popup.js"></script>
+</body>
+</html>
