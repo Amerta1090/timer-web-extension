@@ -126,10 +126,15 @@
     saveAll();
   }
 
-  function resumeTimer(id) {
+  function startOrResumeTimer(id) {
     const t = timers.find((x) => x.id === id);
-    if (!t || t.state !== "paused") return;
-    startTimerEngine(t);
+    if (!t) return;
+    if (t.state === "paused" || t.state === "idle") {
+      if (t.remaining <= 0) t.remaining = t.initialSeconds;
+      if (t.remaining > 0) {
+        startTimerEngine(t);
+      }
+    }
   }
 
   function resetTimer(id) {
@@ -562,7 +567,7 @@
     switch (action) {
       case "start":
       case "resume":
-        resumeTimer(id);
+        startOrResumeTimer(id);
         break;
       case "pause":
         pauseTimer(id);
