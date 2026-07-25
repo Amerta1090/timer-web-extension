@@ -32,19 +32,14 @@
     try {
       const ctx = getAudioCtx();
       const vol = settings.volume / 100;
-      if (type === "bell") {
-        playBellSound(ctx, vol);
-      } else if (type === "digital") {
-        playDigitalSound(ctx, vol);
-      } else if (type === "gentle") {
-        playGentleSound(ctx, vol);
-      }
-    } catch (e) { /* silent */ }
+      if (type === "bell") playBellSound(ctx, vol);
+      else if (type === "digital") playDigitalSound(ctx, vol);
+      else if (type === "gentle") playGentleSound(ctx, vol);
+    } catch (e) {}
   }
 
   function playBellSound(ctx, vol) {
-    const times = [0, 0.25, 0.5];
-    times.forEach((t) => {
+    [0, 0.25, 0.5].forEach((t) => {
       const osc = ctx.createOscillator();
       const gain = ctx.createGain();
       osc.type = "sine";
@@ -59,8 +54,7 @@
   }
 
   function playDigitalSound(ctx, vol) {
-    const freqs = [1200, 1000, 1200, 800];
-    freqs.forEach((f, i) => {
+    [1200, 1000, 1200, 800].forEach((f, i) => {
       const osc = ctx.createOscillator();
       const gain = ctx.createGain();
       osc.type = "square";
@@ -92,7 +86,6 @@
     return {
       id: Date.now() + Math.random(),
       label: label || "",
-      totalSeconds: totalSec,
       initialSeconds: totalSec,
       remaining: totalSec,
       state: "running",
@@ -106,7 +99,7 @@
     timer.state = "running";
     timer.intervalId = setInterval(() => {
       timer.remaining--;
-      renderTimers();
+      updateTimerCard(timer);
       updateTabTitle();
       if (timer.remaining <= 0) {
         clearInterval(timer.intervalId);
@@ -180,7 +173,6 @@
     const sec = minutes * 60;
     const existingIdle = timers.find((t) => t.state === "idle");
     if (existingIdle) {
-      existingIdle.totalSeconds = sec;
       existingIdle.initialSeconds = sec;
       existingIdle.remaining = sec;
       startTimerEngine(existingIdle);
@@ -291,7 +283,6 @@
         const t = {
           id: td.id,
           label: td.label || "",
-          totalSeconds: td.initialSeconds,
           initialSeconds: td.initialSeconds,
           remaining: td.remaining,
           state: "idle",
@@ -322,7 +313,7 @@
     const h = Math.floor(sec / 3600);
     const m = Math.floor((sec % 3600) / 60);
     const s = sec % 60;
-    return { h, m, s, str: `${pad(h)}:${pad(m)}:${pad(s)}` };
+    return `${pad(h)}:${pad(m)}:${pad(s)}`;
   }
 
   function formatDuration(sec) {
@@ -334,15 +325,13 @@
   }
 
   function formatDate(ts) {
-    const d = new Date(ts);
-    const now = new Date();
-    const diffMs = now - d;
+    const diffMs = Date.now() - ts;
     const diffM = Math.floor(diffMs / 60000);
     if (diffM < 1) return "Baru saja";
     if (diffM < 60) return `${diffM} menit lalu`;
     const diffH = Math.floor(diffM / 60);
     if (diffH < 24) return `${diffH} jam lalu`;
-    return d.toLocaleDateString("id-ID", { day: "numeric", month: "short" });
+    return new Date(ts).toLocaleDateString("id-ID", { day: "numeric", month: "short" });
   }
 
   function getProgressColor(idx) {
@@ -350,6 +339,37 @@
     return colors[idx % colors.length];
   }
 
+  function getStatusText(state) {
+    if (state === "running") return "Berjalan...";
+    if (state === "paused") return "Dijeda";
+    if (state === "finished") return "Selesai!";
+    return "Siap";
+  }
+
+  function getTimerCardId(id) {
+    return "tc-" + String(id).replace(".", "-");
+  }
+
+  // ═══ Lightweight tick update — no DOM rebuild ═══
+  function updateTimerCard(timer) {
+    const cardId = getTimerCardId(timer.id);
+    const card = document.getElementById(cardId);
+    if (!card) return;
+
+    const pct = timer.initialSeconds > 0 ? timer.remaining / timer.initialSeconds : 0;
+    const offset = RING_CIRCUMFERENCE * (1 - pct);
+
+    const timeEl = card.querySelector(".time-value");
+    if (timeEl) timeEl.textContent = formatTime(timer.remaining);
+
+    const pctEl = card.querySelector(".progress-ring-text");
+    if (pctEl) pctEl.textContent = Math.round(pct * 100) + "%";
+
+    const barEl = card.querySelector(".progress-ring-bar");
+    if (barEl) barEl.setAttribute("stroke-dashoffset", offset);
+  }
+
+  // ═══ Full render — only on structural changes ═══
   function renderTimers() {
     const container = $("#timers-container");
     if (!container) return;
@@ -368,15 +388,10 @@
     }
 
     container.innerHTML = timers.map((t, idx) => {
-      const f = formatTime(t.remaining);
       const pct = t.initialSeconds > 0 ? t.remaining / t.initialSeconds : 0;
       const offset = RING_CIRCUMFERENCE * (1 - pct);
       const color = getProgressColor(idx);
       const stateClass = t.state === "running" ? " running" : t.state === "finished" ? " finished" : t.state === "paused" ? " paused" : "";
-      let statusText = "Siap";
-      if (t.state === "running") statusText = "Berjalan...";
-      else if (t.state === "paused") statusText = "Dijeda";
-      else if (t.state === "finished") statusText = "Selesai!";
 
       let controlsHtml = "";
       if (t.state === "finished") {
@@ -416,7 +431,7 @@
       }
 
       return `
-        <div class="timer-card${stateClass}" style="--card-accent:${color};--card-accent-glow:${color}33" data-timer-id="${t.id}">
+        <div id="${getTimerCardId(t.id)}" class="timer-card${stateClass}" style="--card-accent:${color};--card-accent-glow:${color}33" data-timer-id="${t.id}">
           <div class="timer-card-header">
             <input class="timer-label-input" type="text" placeholder="Beri label..." value="${t.label}" data-action="set-label" data-id="${t.id}" maxlength="30">
             <div class="timer-card-actions">
@@ -436,8 +451,8 @@
               <div class="progress-ring-text">${Math.round(pct * 100)}%</div>
             </div>
             <div class="timer-time-display">
-              <div class="time-value">${f.str}</div>
-              <div class="time-status">${statusText}</div>
+              <div class="time-value">${formatTime(t.remaining)}</div>
+              <div class="time-status">${getStatusText(t.state)}</div>
             </div>
           </div>
           ${controlsHtml}
@@ -570,8 +585,6 @@
         saveAll();
         showToast("Preset dihapus");
         break;
-      case "set-label":
-        break;
     }
   }
 
@@ -604,9 +617,7 @@
 
     // Preset quick buttons
     $$(".btn-preset[data-preset]").forEach((btn) => {
-      btn.addEventListener("click", () => {
-        startPreset(parseInt(btn.dataset.preset, 10));
-      });
+      btn.addEventListener("click", () => startPreset(parseInt(btn.dataset.preset, 10)));
     });
 
     // Add time buttons
@@ -638,7 +649,6 @@
         if (total <= 0) return;
         const existingIdle = timers.find((t) => t.state === "idle");
         if (existingIdle) {
-          existingIdle.totalSeconds = total;
           existingIdle.initialSeconds = total;
           existingIdle.remaining = total;
           startTimerEngine(existingIdle);
@@ -656,7 +666,6 @@
       });
     }
 
-    // Enter in manual inputs
     ["input-hours", "input-minutes", "input-seconds"].forEach((id) => {
       const el = $(`#${id}`);
       if (el) el.addEventListener("keydown", (e) => { if (e.key === "Enter") btnSet.click(); });
