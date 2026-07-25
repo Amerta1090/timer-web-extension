@@ -112,9 +112,11 @@
         renderTimers();
         updateTabTitle();
         saveAll();
+        notifyBackground();
       }
     }, 1000);
     saveAll();
+    notifyBackground();
   }
 
   function pauseTimer(id) {
@@ -125,6 +127,7 @@
     t.state = "paused";
     renderTimers();
     saveAll();
+    notifyBackground();
   }
 
   function startOrResumeTimer(id) {
@@ -148,6 +151,7 @@
     renderTimers();
     updateTabTitle();
     saveAll();
+    notifyBackground();
   }
 
   function removeTimer(id) {
@@ -158,6 +162,7 @@
     renderTimers();
     updateTabTitle();
     saveAll();
+    notifyBackground();
   }
 
   function addTimeToTimer(id, sec) {
@@ -173,6 +178,7 @@
     }
     renderTimers();
     saveAll();
+    notifyBackground();
   }
 
   function startPreset(minutes) {
@@ -225,6 +231,16 @@
       message: `Durasi: ${durStr}`,
       priority: 2,
     });
+  }
+
+  // ═══ Background Sync ═══
+  function notifyBackground() {
+    const running = timers.filter((t) => t.state === "running");
+    if (running.length > 0) {
+      browser.runtime.sendMessage({ action: "timer-update", remaining: running[0].remaining }).catch(() => {});
+    } else {
+      browser.runtime.sendMessage({ action: "timer-stop" }).catch(() => {});
+    }
   }
 
   // ═══ Tab Title ═══
@@ -827,6 +843,9 @@
       if (msg.action === "quick-1h") { startPreset(60); showToast("Timer 1 Jam dimulai!"); }
       if (msg.action === "quick-30m") { startPreset(30); showToast("Timer 30 Menit dimulai!"); }
     });
+
+    // Sync badge with background on popup open
+    notifyBackground();
   }
 
   init();
