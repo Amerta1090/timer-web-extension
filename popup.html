@@ -1,50 +1,203 @@
 <!DOCTYPE html>
-<html lang="id">
+<html lang="id" data-theme="dark">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Quick Timer</title>
+  <title>Quick Timer Pro</title>
   <link rel="stylesheet" href="popup.css">
 </head>
 <body>
-  <div class="container">
-    <h1>⏱ Quick Timer</h1>
+  <div class="app">
+    <header class="header">
+      <div class="logo">
+        <svg class="logo-icon" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="12" cy="12" r="10"/>
+          <polyline points="12,6 12,12 16,14"/>
+        </svg>
+        <span class="logo-text">Quick Timer</span>
+      </div>
+      <div class="header-actions">
+        <button id="btn-theme" class="icon-btn" title="Ganti tema">
+          <svg class="icon-sun" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>
+          </svg>
+          <svg class="icon-moon" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+          </svg>
+        </button>
+        <button id="btn-settings" class="icon-btn" title="Pengaturan">
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+          </svg>
+        </button>
+      </div>
+    </header>
 
-    <div id="timer-display" class="timer-display">
-      <span id="hours">00</span>:<span id="minutes">00</span>:<span id="seconds">00</span>
-    </div>
+    <nav class="tabs">
+      <button class="tab active" data-tab="timer">
+        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12,6 12,12 16,14"/></svg>
+        Timer
+      </button>
+      <button class="tab" data-tab="presets">
+        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>
+        Preset
+      </button>
+      <button class="tab" data-tab="history">
+        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12,6 12,12 16,14"/></svg>
+        Riwayat
+      </button>
+    </nav>
 
-    <div id="status" class="status">Siap</div>
+    <main class="content">
+      <section id="panel-timer" class="panel active">
+        <div id="timers-container" class="timers-container"></div>
 
-    <div id="controls" class="controls">
-      <button id="btn-start" class="btn btn-primary">Mulai</button>
-      <button id="btn-pause" class="btn btn-warning" style="display:none;">Jeda</button>
-      <button id="btn-reset" class="btn btn-danger">Reset</button>
-    </div>
+        <button id="btn-add-timer" class="btn-add-timer" title="Timer baru">
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          Timer Baru
+        </button>
 
-    <div class="section-label">Preset Cepat</div>
-    <div id="presets" class="preset-grid">
-      <button class="btn btn-preset" data-minutes="60">1 Jam</button>
-      <button class="btn btn-preset" data-minutes="90">1.5 Jam</button>
-      <button class="btn btn-preset" data-minutes="120">2 Jam</button>
-      <button class="btn btn-preset" data-minutes="30">30 Mnt</button>
-    </div>
+        <div class="divider"></div>
 
-    <div class="section-label">Tambah Waktu</div>
-    <div id="add-time" class="add-grid">
-      <button class="btn btn-add" data-seconds="60">+1 Mnt</button>
-      <button class="btn btn-add" data-seconds="300">+5 Mnt</button>
-      <button class="btn btn-add" data-seconds="900">+15 Mnt</button>
-      <button class="btn btn-add btn-add-big" data-seconds="1800">+30 Mnt</button>
-    </div>
+        <div class="section-label">Preset Cepat</div>
+        <div class="preset-row">
+          <button class="btn btn-preset" data-preset="60">1 Jam</button>
+          <button class="btn btn-preset" data-preset="90">1.5 Jam</button>
+          <button class="btn btn-preset" data-preset="120">2 Jam</button>
+          <button class="btn btn-preset" data-preset="30">30 Mnt</button>
+        </div>
 
-    <div class="section-label">Input Manual</div>
-    <div class="manual-input">
-      <input type="number" id="input-hours" min="0" max="23" value="0" placeholder="jam">
-      <input type="number" id="input-minutes" min="0" max="59" value="0" placeholder="mnt">
-      <input type="number" id="input-seconds" min="0" max="59" value="0" placeholder="dtk">
-      <button id="btn-set" class="btn btn-set">Set</button>
-    </div>
+        <div class="section-label">Tambah Waktu</div>
+        <div class="add-row">
+          <button class="btn btn-add" data-add="60">+1 Mnt</button>
+          <button class="btn btn-add" data-add="300">+5 Mnt</button>
+          <button class="btn btn-add" data-add="900">+15 Mnt</button>
+          <button class="btn btn-add btn-add-accent" data-add="1800">+30 Mnt</button>
+        </div>
+
+        <div class="section-label">Input Manual</div>
+        <div class="manual-row">
+          <div class="input-group">
+            <input type="number" id="input-hours" min="0" max="23" value="0" placeholder="00">
+            <label>Jam</label>
+          </div>
+          <span class="input-sep">:</span>
+          <div class="input-group">
+            <input type="number" id="input-minutes" min="0" max="59" value="0" placeholder="00">
+            <label>Mnt</label>
+          </div>
+          <span class="input-sep">:</span>
+          <div class="input-group">
+            <input type="number" id="input-seconds" min="0" max="59" value="0" placeholder="00">
+            <label>Dtk</label>
+          </div>
+          <button id="btn-set" class="btn btn-set">Set</button>
+        </div>
+      </section>
+
+      <section id="panel-presets" class="panel">
+        <div class="section-label">Preset Tersimpan</div>
+        <div id="custom-presets-list" class="presets-list"></div>
+        <div class="divider"></div>
+        <div class="section-label">Tambah Preset Baru</div>
+        <div class="preset-form">
+          <input type="text" id="preset-name" placeholder="Nama preset (mis: Kerja)" maxlength="20">
+          <div class="preset-time-row">
+            <div class="input-group">
+              <input type="number" id="preset-hours" min="0" max="23" value="0" placeholder="00">
+              <label>Jam</label>
+            </div>
+            <span class="input-sep">:</span>
+            <div class="input-group">
+              <input type="number" id="preset-minutes" min="0" max="59" value="0" placeholder="00">
+              <label>Mnt</label>
+            </div>
+            <span class="input-sep">:</span>
+            <div class="input-group">
+              <input type="number" id="preset-seconds" min="0" max="59" value="0" placeholder="00">
+              <label>Dtk</label>
+            </div>
+          </div>
+          <div class="preset-color-row">
+            <span class="color-label">Warna:</span>
+            <div class="color-options">
+              <button class="color-dot active" data-color="#4fc3f7" style="background:#4fc3f7"></button>
+              <button class="color-dot" data-color="#ab47bc" style="background:#ab47bc"></button>
+              <button class="color-dot" data-color="#66bb6a" style="background:#66bb6a"></button>
+              <button class="color-dot" data-color="#ffa726" style="background:#ffa726"></button>
+              <button class="color-dot" data-color="#ef5350" style="background:#ef5350"></button>
+              <button class="color-dot" data-color="#ec407a" style="background:#ec407a"></button>
+            </div>
+          </div>
+          <button id="btn-save-preset" class="btn btn-primary btn-full">Simpan Preset</button>
+        </div>
+      </section>
+
+      <section id="panel-history" class="panel">
+        <div class="history-header">
+          <div class="section-label">Riwayat Timer</div>
+          <button id="btn-clear-history" class="btn-text btn-danger-text">Hapus Semua</button>
+        </div>
+        <div id="history-list" class="history-list"></div>
+      </section>
+    </main>
+
+    <section id="settings-overlay" class="overlay hidden">
+      <div class="overlay-card">
+        <div class="overlay-header">
+          <h2>Pengaturan</h2>
+          <button id="btn-close-settings" class="icon-btn">
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+          </button>
+        </div>
+        <div class="settings-body">
+          <div class="setting-row">
+            <div class="setting-info">
+              <span class="setting-label">Suara Notifikasi</span>
+              <span class="setting-desc">Nada saat timer selesai</span>
+            </div>
+            <div class="setting-control">
+              <select id="sound-select">
+                <option value="bell">Bel</option>
+                <option value="digital">Digital</option>
+                <option value="gentle">Lembut</option>
+                <option value="none">Mati</option>
+              </select>
+            </div>
+          </div>
+          <div class="setting-row">
+            <div class="setting-info">
+              <span class="setting-label">Volume</span>
+              <span class="setting-desc">Keras suara notifikasi</span>
+            </div>
+            <div class="setting-control">
+              <input type="range" id="volume-slider" min="0" max="100" value="70">
+              <span id="volume-value" class="range-value">70%</span>
+            </div>
+          </div>
+          <div class="setting-row">
+            <div class="setting-info">
+              <span class="setting-label">Tab Title Countdown</span>
+              <span class="setting-desc">Tampilkan sisa waktu di title tab</span>
+            </div>
+            <div class="setting-control">
+              <label class="toggle">
+                <input type="checkbox" id="toggle-tab-title" checked>
+                <span class="toggle-slider"></span>
+              </label>
+            </div>
+          </div>
+          <div class="setting-row">
+            <div class="setting-info">
+              <span class="setting-label">Keyboard Shortcuts</span>
+              <span class="setting-desc">Ctrl+Shift+T = 1 Jam, Ctrl+Shift+Y = 30 Mnt</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <div id="toast" class="toast hidden"></div>
   </div>
 
   <script src="popup.js"></script>

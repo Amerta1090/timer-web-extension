@@ -1,8 +1,8 @@
 {
   "manifest_version": 2,
-  "name": "Quick Timer",
-  "version": "1.0.0",
-  "description": "Timer instan — langsung 1 jam, +30 menit sekali klik",
+  "name": "Quick Timer Pro",
+  "version": "2.0.0",
+  "description": "Timer premium — multi-timer, suara, label, history, keyboard shortcut",
   "permissions": [
     "alarms",
     "storage",
@@ -15,12 +15,22 @@
       "48": "icons/icon-48.png",
       "96": "icons/icon-96.png"
     },
-    "default_title": "Quick Timer",
+    "default_title": "Quick Timer Pro",
     "default_popup": "popup.html"
   },
   "background": {
     "scripts": ["background.js"],
     "persistent": false
+  },
+  "commands": {
+    "quick-1h": {
+      "suggested_key": { "default": "Ctrl+Shift+T" },
+      "description": "Timer 1 Jam"
+    },
+    "quick-30m": {
+      "suggested_key": { "default": "Ctrl+Shift+Y" },
+      "description": "Timer 30 Menit"
+    }
   },
   "icons": {
     "16": "icons/icon-16.png",
