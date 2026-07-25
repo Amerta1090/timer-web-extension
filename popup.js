@@ -97,6 +97,7 @@
   function startTimerEngine(timer) {
     if (timer.remaining <= 0) return;
     timer.state = "running";
+    renderTimers();
     timer.intervalId = setInterval(() => {
       timer.remaining--;
       updateTimerCard(timer);
